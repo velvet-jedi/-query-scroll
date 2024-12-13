@@ -8,13 +8,18 @@ type Post = {
 	body: string;
 };
 
+// define type for error object
+type ErrorState = {
+	message?: string;
+};
+
 // hook to to fetch and manage the state of posts from an API
 
 const usePosts = (page = 1) => {
 	const [results, setResults] = useState<Post[]>([]);
 	const [isLoading, setIsLoading] = useState<Boolean>(false);
 	const [isError, setIsError] = useState<Boolean>(false);
-	const [error, setError] = useState({});
+	const [error, setError] = useState<ErrorState>({});
 
 	const [hasNextPage, setHasNextPage] = useState<Boolean>(false);
 
