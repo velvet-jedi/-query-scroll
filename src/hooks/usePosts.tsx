@@ -1,29 +1,27 @@
 import { getPostsPage } from "../api/axios";
 import { useEffect, useState } from "react";
 
-// Define the Type for a Post
+// This type defines the structure of the data fetched from the API.
 type Post = {
 	id: number;
 	title: string;
 	body: string;
 };
 
-// define type for error object
+// Define type for error object
 type ErrorState = {
 	message?: string;
 };
-
-// hook to to fetch and manage the state of posts from an API
 
 const usePosts = (page = 1) => {
 	const [results, setResults] = useState<Post[]>([]);
 	const [isLoading, setIsLoading] = useState<Boolean>(false);
 	const [isError, setIsError] = useState<Boolean>(false);
 	const [error, setError] = useState<ErrorState>({});
-
 	const [hasNextPage, setHasNextPage] = useState<Boolean>(false);
 
 	useEffect(() => {
+		console.log("Ran");
 		setIsLoading(true);
 		setIsError(false);
 		setError({});
@@ -33,25 +31,31 @@ const usePosts = (page = 1) => {
 
 		getPostsPage(page, { signal })
 			.then((data) => {
-				setResults((prev) => [...prev, ...data]);
-				setHasNextPage(Boolean(data.length));
+				// Avoid duplicates by filtering out already existing posts
+				setResults((prev) => {
+					const newPosts = data.filter(
+						(post: Post) =>
+							!prev.some((exists) => exists.id === post.id)
+					);
+					return [...prev, ...newPosts]; // Append only new posts
+				});
+				setHasNextPage(Boolean(data.length)); // If there is data, there could be more posts to load
 				setIsLoading(false);
 			})
 			.catch((err) => {
 				setIsLoading(false);
-				if (signal.aborted) return; // ignore if the error was the cancellation of the request
+				if (signal.aborted) return; // Ignore if the error was due to request cancellation
 				setIsError(true);
-				setError({ message: err.message }); // the error object will have a message property that contains the error message from the caught exception
+				setError({ message: err.message }); // Capture the error message
 			});
 
-		// cleanup function abort the request on unmount
+		// Cleanup function to abort the request on unmount or page change
 		return () => {
 			abortController.abort();
 		};
-	}, [page]);
+	}, [page]); // Re-run effect when the page changes
 
 	return { results, isLoading, isError, error, hasNextPage };
-	// allow any component that uses this hook to access and display the posts, loading state, error state, and pagination information.
 };
 
 export default usePosts;

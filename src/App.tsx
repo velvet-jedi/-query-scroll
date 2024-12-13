@@ -1,9 +1,12 @@
 import "./App.css";
+import ExOne from "./components/exone";
 
 function App() {
 	return (
 		<>
-			<div></div>
+			<div>
+				<ExOne />
+			</div>
 		</>
 	);
 }
