@@ -1,0 +1,2 @@
+-   axios for fetching from jsonplaceholder.typicode.com endpoint
+-   a page of results at a time
