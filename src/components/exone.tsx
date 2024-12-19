@@ -17,6 +17,7 @@ const ExOne = () => {
 			</p>
 		);
 
+	// content is a variable (not a component) in ExOne holding an array of JSX elements that represent Post components.
 	const content = results.map((post, index) => {
 		if (index + 1 === results.length) {
 			return (

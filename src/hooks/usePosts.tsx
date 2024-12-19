@@ -21,7 +21,7 @@ const usePosts = (page = 1) => {
 	const [hasNextPage, setHasNextPage] = useState<Boolean>(false);
 
 	useEffect(() => {
-		console.log("Ran");
+		// console.log("Ran");
 		setIsLoading(true);
 		setIsError(false);
 		setError({});
