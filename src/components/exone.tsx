@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import usePosts from "../hooks/usePosts";
 import Post from "./Post";
 
@@ -8,7 +8,25 @@ const ExOne = () => {
 	const { isError, isLoading, hasNextPage, results, error } =
 		usePosts(pageNum);
 
-	const lastPostRef = useRef<HTMLElement | null>(null); //  Initially, the reference is null later on an HTMLElement
+	// const lastPostRef = useRef<HTMLElement | null>(null); //  Initially, the reference is null later on an HTMLElement
+
+	const intObserver = useRef<IntersectionObserver | null>(null);
+	const lastPostRef = useCallback((post: HTMLElement)  => { 
+		if(isLoading) return
+
+		if(intObserver.current) intObserver.current.disconnect();
+
+		intObserver.current = new IntersectionObserver((posts) => {
+			if(posts[0].isIntersecting && hasNextPage) {
+				console.log('we are near the last post!')
+				setPageNum(prev => prev + 1)
+			}
+		})
+
+		if(post) intObserver.current.observe(post)
+	}, [isLoading, hasNextPage])
+
+	
 
 	if (isError)
 		return (
@@ -50,3 +68,23 @@ const ExOne = () => {
 };
 
 export default ExOne;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
